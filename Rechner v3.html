@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gehaltsrechner MFA 2025</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #F4F7FC;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+            margin: 50px auto;
+            background: #FFFFFF;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #005BBB;
+        }
+
+        h2, h3, h4 {
+            color: #333;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        select, input[type="range"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            appearance: none;
+        }
+
+        input[type="range"] {
+            background: #ddd;
+            height: 6px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #005BBB;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-runnable-track {
+            background: #ddd;
+        }
+
+        button {
+            background-color: #005BBB;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #004899;
+        }
+
+        .result {
+            text-align: center;
+            font-size: 1.2em;
+            margin-top: 20px;
+            color: #005BBB;
+        }
+
+        .cta-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .cta-button {
+            background-color: #005BBB;
+            color: white;
+            text-decoration: none;
+            padding: 15px 25px;
+            border-radius: 5px;
+            font-size: 16px;
+            display: inline-block;
+        }
+
+        .cta-button:hover {
+            background-color: #004899;
+        }
+
+        ul {
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .slider-container span {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .slider-value {
+            margin-top: -25px;
+            text-align: center;
+            color: #005BBB;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Gehaltsrechner für MFA 2025</h1>
+
+    <label for="typeSelector">Bist du Azubi oder Fachkraft?</label>
+    <select id="typeSelector">
+        <option value="" selected disabled>Bitte auswählen</option>
+        <option value="fachkraft">Fachkraft</option>
+        <option value="azubi">Azubi</option>
+    </select>
+
+    <label for="taskGroup">Wähle deine Tätigkeitsgruppe</label>
+    <select id="taskGroup">
+        <option value="I">Tätigkeitsgruppe I: Rezeption, Verwaltung</option>
+        <option value="II">Tätigkeitsgruppe II: Diagnostische Assistenz</option>
+        <option value="III">Tätigkeitsgruppe III: Spezialisierte medizinische Tätigkeiten</option>
+        <option value="IV">Tätigkeitsgruppe IV: Organisation und Qualitätssicherung</option>
+        <option value="V">Tätigkeitsgruppe V: Praxismanagement</option>
+        <option value="VI">Tätigkeitsgruppe VI: Strategische Führung</option>
+    </select>
+
+    <label for="experience">Wie viele Jahre Berufserfahrung hast du?</label>
+    <div class="slider-container">
+        <span>0</span>
+        <input type="range" id="experience" min="0" max="30" step="1" value="0" oninput="updateExperienceLabel(this.value)">
+        <span>30+</span>
+    </div>
+    <div id="experienceLabel" class="slider-value">0 Jahre</div>
+
+    <label for="workHours">Wie viele Stunden arbeitest du pro Woche?</label>
+    <input type="number" id="workHours" value="38.5">
+
+    <button onclick="calculateSalary()">Gehaltsberechnung</button>
+
+    <div class="result" id="salaryResult"></div>
+
+    <div class="cta-container">
+        <a href="https://app.get-luna.de/User/AddUser" class="cta-button">Finde jetzt einen übertariflich vergüteten Job bei LUNA</a>
+    </div>
+</div>
+
+<canvas id="confettiCanvas"></canvas>
+
+<script>
+    const salaryData = {
+        "I": [2803.95, 2855.88, 2907.80, 2959.73, 3167.43, 3219.35, 3271.28, 3323.20],
+        "II": [2972.19, 3027.23, 3082.27, 3137.31, 3357.48, 3412.51, 3467.56, 3522.59],
+        "III": [3140.42, 3198.59, 3256.74, 3314.90, 3547.52, 3605.67, 3663.83, 3721.98],
+        "IV": [3308.66, 3369.94, 3431.20, 3492.48, 3737.56, 3798.83, 3860.10, 3921.38],
+        "V": [3589.06, 3655.53, 3721.98, 3788.45, 4054.31, 4120.77, 4187.24, 4253.70],
+        "VI": [3981.61, 4055.35, 4129.08, 4202.82, 4497.75, 4571.48, 4645.22, 4718.94]
+    };
+
+    function updateExperienceLabel(value) {
+        document.getElementById('experienceLabel').innerText = `${value} Jahre`;
+    }
+
+    function calculateSalary() {
+        const type = document.getElementById('typeSelector').value;
+        const resultDiv = document.getElementById('salaryResult');
+        resultDiv.innerHTML = "";
+
+        if (type === "azubi") {
+            resultDiv.innerHTML = `
+                <div>1. Ausbildungsjahr: 1.120 € brutto/Monat</div>
+                <div>2. Ausbildungsjahr: 1.180 € brutto/Monat</div>
+                <div>3. Ausbildungsjahr: 1.280 € brutto/Monat</div>
+            `;
+            triggerConfetti();
+            return;
+        }
+
+        const group = document.getElementById('taskGroup').value;
+        const experience = parseInt(document.getElementById('experience').value);
+        const hours = parseFloat(document.getElementById('workHours').value);
+
+        const index = Math.min(Math.floor(experience / 4), 7);
+        const baseSalary = salaryData[group][index];
+        const adjustedSalary = (baseSalary * (hours / 38.5)).toFixed(2);
+
+        resultDiv.innerHTML = `Dein Gehalt beträgt: ${adjustedSalary} € brutto/Monat laut Tarifvertrag.`;
+        triggerConfetti();
+    }
+
+    function triggerConfetti() {
+        const canvas = document.getElementById('confettiCanvas');
+        const confetti = new ConfettiGenerator({ target: canvas });
+        confetti.render();
+        setTimeout(() => confetti.clear(), 5000);
+    }
+
+    // Include Confetti Library
+    const script = document.createElement("script");
+    script.src = "https://cdn.jsdelivr.net/npm/confetti-js@0.0.17/dist/index.min.js";
+    document.head.appendChild(script);
+</script>
+
+</body>
+</html>
